@@ -1,0 +1,99 @@
+---
+const data = await fetch('https://api.producthunt.com/v2/api/graphql', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${import.meta.env.TOKEN}`
+  },
+  body: JSON.stringify({query: `
+    {
+      post(id: "doodlicons-2") {
+        votesCount
+      }
+    }`
+  })
+}).then(res => res.json()).then(res => res.data)
+
+const votes: number = data.post.votesCount
+const maxVotes = 1500
+
+const state =
+  votes < maxVotes / 3 ?
+  'sleep' :
+  votes < maxVotes / 3 * 2 ?
+    'shock' :
+  votes < maxVotes ?
+    'happy' : 'love'
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+    {
+      votes === maxVotes && <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    }
+		<title>Astro</title>
+    { votes !== maxVotes && <meta http-equiv="refresh" content="30" /> }
+	</head>
+	<body class="bg-zinc-950 text-white flex flex-wrap h-screen">
+    <div class="absolute top-0 w-full flex justify-center gap-x-72 max-sm:gap-x-48">
+      <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
+      <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
+    </div>
+
+    <div class="absolute top-12 w-full flex justify-center">
+      <div class="max-w-[24rem] max-sm:max-w-[18rem] w-full h-48 bg-zinc-800 border-zinc-700 border rounded-lg flex flex-col justify-center items-center">
+        <div class="max-w-[21rem] max-sm:max-w-[15rem] w-full h-28 mt-6 bg-zinc-900 shadow-inner rounded flex justify-center items-center text-8xl font-black text-purple-500 glow">{votes}</div>
+        <p class="text-3xl font-light p-2">VOTES</p>
+      </div>
+    </div>
+
+    <div class="self-end grad w-full min-h-[5rem] p-2 rounded-lg" style={`height: ${votes / maxVotes * 100}%;`}>
+      <div class="screen w-full h-full rounded flex justify-center items-center">
+        <img class="h-8" src={`/houston/${state}.svg`}/>
+      </div>
+    </div>
+	</body>
+
+  <style>
+    .grad {
+      background: conic-gradient(from 0deg at 50.00% 50.00%, #3245FF 0deg, #BC52EE 103.12500357627869deg, #4AF2C8 149.1623318195343deg, #4AF2C8 199.67810153961182deg, #3245FF 360deg);
+    }
+    .screen {
+      background: radial-gradient(81.39% 81.39% at 50.00% 37.50%, #191C24 36.66%, #111218 66.14%, #040506 100%);
+    }
+    .glow {
+      text-shadow: 1px 1px 2px purple, 0 0 1em purple, 0 0 0.2em purple;
+    }
+  </style>
+
+  {
+    votes == maxVotes && (
+      <script>
+        var duration = 15 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 10, spread: 360, ticks: 60, zIndex: 0 };
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        var interval = setInterval(function() {
+          var timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          var particleCount = 50 * (timeLeft / duration);
+          // since particles fall down, start a bit higher than random
+          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+      </script>
+    )
+  }
+</html>
