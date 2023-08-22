@@ -32,6 +32,7 @@ const state =
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+    <meta name="description" content="Houston is here to celebrate the launch of Starlight on product hunt">
     {
       votes === maxVotes && <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     }
@@ -53,7 +54,7 @@ const state =
 
     <div class="self-end grad w-full min-h-[5rem] p-2 rounded-lg" style={`height: ${votes / maxVotes * 100}%;`}>
       <div class="screen w-full h-full rounded flex justify-center items-center">
-        <img class="h-8" src={`/houston/${state}.svg`}/>
+        <img class="h-8" src={`/houston/${state}.svg`} alt={`Houston ${state}`}/>
       </div>
     </div>
 	</body>
