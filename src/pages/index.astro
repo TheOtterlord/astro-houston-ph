@@ -37,7 +37,6 @@ const state =
       votes === maxVotes && <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     }
 		<title>Astro</title>
-    { votes !== maxVotes && <meta http-equiv="refresh" content="30" /> }
 	</head>
 	<body class="bg-zinc-950 text-white flex flex-wrap h-screen">
     <div class="absolute top-0 w-full flex justify-center gap-x-72 max-sm:gap-x-48">
@@ -72,8 +71,8 @@ const state =
   </style>
 
   {
-    votes == maxVotes && (
-      <script>
+    votes === maxVotes && (
+      <script is:inline>
         var duration = 15 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 10, spread: 360, ticks: 60, zIndex: 0 };
@@ -94,6 +93,16 @@ const state =
           confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
           confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
         }, 250);
+      </script>
+    )
+  }
+
+  {
+    votes !== maxVotes && (
+      <script>
+        setTimeout(() => {
+          window.location.reload()
+        }, 60 * 1000)
       </script>
     )
   }
