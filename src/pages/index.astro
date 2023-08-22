@@ -1,20 +1,80 @@
 ---
-const data = await fetch('https://api.producthunt.com/v2/api/graphql', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${import.meta.env.TOKEN}`
-  },
-  body: JSON.stringify({query: `
-    {
-      post(id: "doodlicons-2") {
-        votesCount
-      }
-    }`
-  })
-}).then(res => res.json()).then(res => res.data)
+class MomentoFetcher {
+	private readonly apiToken: string;
+	private readonly baseurl: string;
+	constructor(token: string, endpoint: string) {
+		this.apiToken = token;
+		this.baseurl = `${endpoint}/cache`;
+	}
 
-const votes: number = data.post.votesCount
+	async get(cacheName: string, key: string) {
+		const resp = await fetch(`${this.baseurl}/${cacheName}?key=${key}&token=${this.apiToken}`);
+		if (resp.status < 300) {
+			console.log(`successfully retrieved ${key} from cache`)
+		} else {
+			throw new Error(`failed to retrieve item from cache: ${cacheName}`)
+		}
+
+		return await resp.text();
+	}
+
+	async set(cacheName: string, key: string, value: string, ttl_seconds: number = 30) {
+		const resp = await fetch(`${this.baseurl}/${cacheName}?key=${key}&token=${this.apiToken}&&ttl_seconds=${ttl_seconds}`, {
+			method: 'PUT',
+			body: value
+		});
+
+		if (resp.status < 300) {
+			console.log(`successfully set ${key} into cache`);
+		} else {
+			throw new Error(`failed to set item into cache message: ${resp.statusText} status: ${resp.status} cache: ${cacheName}`);
+		}
+
+		return;
+	}
+
+	async delete(cacheName: string, key: string) {
+		const resp = await fetch(`${this.baseurl}/${cacheName}?key=${key}&token=${this.apiToken}`, {
+			method: 'DELETE',
+		});
+		if (resp.status < 300) {
+			console.log(`successfully deleted ${key} from cache`);
+		} else {
+			throw new Error(`failed to delete ${key} from cache. Message: ${resp.statusText}; Status: ${resp.status} cache: ${cacheName}`);
+		}
+
+		return resp;
+	}
+}
+
+const client = new MomentoFetcher(import.meta.env.AUTH_TOKEN, import.meta.env.ENDPOINT);
+const cache = "houston-ph"
+const key = "votes"
+
+const votes: number = +(await client.get(cache, key))
+
+// const res = await fetch('https://api.producthunt.com/v2/api/graphql', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: `Bearer ${import.meta.env.TOKEN}`
+//   },
+//   body: JSON.stringify({query: `
+//     {
+//       post(id: "doodlicons-2") {
+//         votesCount
+//       }
+//     }`
+//   })
+// }).then(res => res.json()).then(res => res)
+
+// if (!res.data) {
+//   console.log(res.errors[0].details)
+// }
+
+// const data = res.data
+
+// const votes: number = data?.post?.votesCount ?? 0
 const maxVotes = 1500
 
 const state =
