@@ -6,7 +6,7 @@ import cloudflare from "@astrojs/cloudflare";
 // https://astro.build/config
 export default defineConfig({
   build: {
-    assetsPrefix: '/ph/_astro'
+    assetsPrefix: '/ph'
   },
   integrations: [tailwind()],
   output: "server",
