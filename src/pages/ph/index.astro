@@ -57,7 +57,7 @@ const state =
       </div>
     </div>
 
-    <div class="self-end grad w-full min-h-[5rem] p-2 rounded-lg" style={`height: ${votes / maxVotes * 100}%;`}>
+    <div class="self-end grad w-full min-h-[5rem] p-2 rounded-lg" style={`height: ${Math.min(votes / maxVotes, 1) * 100}%;`}>
       <div class="screen w-full h-full rounded flex justify-center items-center">
         <img class="h-8" src={`/ph/houston/${state}.svg`} alt={`Houston ${state}`}/>
       </div>
