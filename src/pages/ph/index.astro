@@ -42,12 +42,9 @@ const state =
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
     <meta name="description" content="Houston is here to celebrate the launch of Starlight on product hunt">
-    {
-      votes === maxVotes && <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    }
 		<title>Astro</title>
 	</head>
-	<body class="bg-zinc-950 text-white flex flex-wrap h-screen">
+	<body class="bg-zinc-950 text-white flex flex-wrap h-screen" data-votes={votes}>
     <div class="absolute top-0 w-full flex justify-center gap-x-72 max-sm:gap-x-48">
       <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
       <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
@@ -79,35 +76,46 @@ const state =
     }
   </style>
 
-  {
-    votes === maxVotes ? (
-      <script is:inline>
-        var duration = 15 * 1000;
-        var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 10, spread: 360, ticks: 60, zIndex: 0 };
+  <script>
+    import confetti from 'canvas-confetti';
 
-        function randomInRange(min, max) {
-          return Math.random() * (max - min) + min;
+    const maxVotes = 1500;
+    const { votes = 1 } = document.body.dataset;
+
+    const storageKey = 'ph-vote-count'
+    const previousVotes = localStorage.getItem(storageKey) || 1;
+    localStorage.setItem(storageKey, votes);
+
+    if (votes >= maxVotes || votes > previousVotes) {
+      triggerConfetti()
+    }
+
+    // Reload page regularly.
+    setTimeout(() => {
+      window.location.reload()
+    }, 60 * 1000)
+
+    function triggerConfetti() {
+      // Trigger longer confetti the more votes we have.
+      var duration = votes * 10;
+      var animationEnd = Date.now() + duration;
+      var defaults = { startVelocity: 10, spread: 360, ticks: 60, zIndex: 0 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      var interval = setInterval(function() {
+        var timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
         }
 
-        var interval = setInterval(function() {
-          var timeLeft = animationEnd - Date.now();
-
-          if (timeLeft <= 0) {
-            return clearInterval(interval);
-          }
-
-          var particleCount = 50 * (timeLeft / duration);
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-        }, 250);
-      </script>
-    ) : (
-      <script>
-        setTimeout(() => {
-          window.location.reload()
-        }, 60 * 1000)
-      </script>
-    )
-  }
+        var particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+      }, 250);
+    }
+  </script>
 </html>
