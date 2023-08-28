@@ -45,12 +45,15 @@ const state =
 		<title>Astro</title>
 	</head>
 	<body class="bg-zinc-950 text-white flex flex-wrap h-[100dvh]" data-votes={votes}>
+    <div class="absolute z-10 top-0 w-full p-2 text-center bg-[#d73f37] text-white border-y border-[#fff7] text-[clamp(1rem,calc(0.75rem+1vw),1.65rem)]">
+      Starlight is on <a href="https://www.producthunt.com/posts/starlight-by-astro" class="underline">Product Hunt</a> today!
+    </div>
     <div class="absolute top-0 w-full flex justify-center gap-x-72 max-sm:gap-x-48">
       <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
       <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
     </div>
 
-    <div class="absolute top-12 w-full flex justify-center">
+    <div class="absolute top-20 w-full flex justify-center">
       <div class="max-w-[24rem] max-sm:max-w-[18rem] w-full h-48 bg-zinc-800 border-zinc-700 border rounded-lg flex flex-col justify-center items-center">
         <div class="max-w-[21rem] max-sm:max-w-[15rem] w-full h-28 mt-6 bg-zinc-900 shadow-inner rounded flex justify-center items-center text-8xl font-black text-purple-500 glow">{votes}</div>
         <p class="text-3xl font-light p-2">VOTES</p>
