@@ -60,7 +60,7 @@ const state =
       </div>
     </div>
 
-    <div class="self-end grad w-full min-h-[5rem] p-2 rounded-lg" style={`height: ${Math.min(votes / maxVotes, 1) * 100}%;`}>
+    <div data-houston class="self-end grad w-full min-h-[5rem] p-2 rounded-lg -z-10 origin-bottom" style={`height: ${Math.min(votes / maxVotes, 1) * 100}%;`}>
       <div class="screen w-full h-full rounded flex justify-center items-center">
         <img class="h-8" src={`/ph/houston/${state}.svg`} alt={`Houston ${state}`}/>
       </div>
@@ -88,9 +88,15 @@ const state =
     const storageKey = 'ph-vote-count'
     const previousVotes = localStorage.getItem(storageKey) || 1;
     localStorage.setItem(storageKey, votes);
+    const votesIncreased = votes > previousVotes;
 
-    if (votes >= maxVotes || votes > previousVotes) {
+    if (votes >= maxVotes || votesIncreased) {
       triggerConfetti()
+    }
+
+    const houston = document.querySelector('[data-houston]');
+    if (houston && votesIncreased) {
+      houston.classList.add('motion-safe:animate-rise')
     }
 
     // Reload page regularly.
