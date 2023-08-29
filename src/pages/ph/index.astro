@@ -95,10 +95,10 @@ const state =
     import confetti from 'canvas-confetti';
 
     const maxVotes = 1500;
-    const { votes = 1 } = document.body.dataset;
+    const votes = parseInt(document.body.dataset.votes) || 1;
 
     const storageKey = 'ph-vote-count'
-    const previousVotes = localStorage.getItem(storageKey) || 1;
+    const previousVotes = parseInt(localStorage.getItem(storageKey)) || 1;
     localStorage.setItem(storageKey, votes);
     const votesIncreased = votes > previousVotes;
 
