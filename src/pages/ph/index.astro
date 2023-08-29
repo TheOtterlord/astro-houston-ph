@@ -24,7 +24,7 @@ const cache = "houston-ph"
 const key = "votes"
 
 const votes: number = +(await client.get(cache, key))
-const maxVotes = 1500
+const maxVotes = 700
 const position: number = +(await client.get(cache, 'position')) + 1
 
 const state =
