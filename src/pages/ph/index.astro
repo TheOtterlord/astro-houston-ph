@@ -79,6 +79,18 @@ const state =
     }
   </style>
 
+  <script is:inline>
+    const { votes = 1 } = document.body.dataset;
+    const storageKey = 'ph-vote-count'
+    const previousVotes = localStorage.getItem(storageKey) || 1;
+    const votesIncreased = votes > previousVotes;
+
+    const houston = document.querySelector('[data-houston]');
+    if (houston && votesIncreased) {
+      houston.classList.add('motion-safe:animate-rise')
+    }
+  </script>
+
   <script>
     import confetti from 'canvas-confetti';
 
@@ -92,11 +104,6 @@ const state =
 
     if (votes >= maxVotes || votesIncreased) {
       triggerConfetti()
-    }
-
-    const houston = document.querySelector('[data-houston]');
-    if (houston && votesIncreased) {
-      houston.classList.add('motion-safe:animate-rise')
     }
 
     // Reload page regularly.
