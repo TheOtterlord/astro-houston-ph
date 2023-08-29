@@ -38,29 +38,29 @@ const state =
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" href="/ph/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
     <meta name="description" content="Houston is here to celebrate the launch of Starlight on product hunt">
-    {
-      votes === maxVotes && <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    }
 		<title>Astro</title>
 	</head>
-	<body class="bg-zinc-950 text-white flex flex-wrap h-screen">
+	<body class="bg-zinc-950 text-white flex flex-wrap h-[100dvh]" data-votes={votes}>
+    <div class="absolute z-10 top-0 w-full p-2 text-center bg-[#d73f37] text-white border-y border-[#fff7] text-[clamp(1rem,calc(0.75rem+1vw),1.65rem)]">
+      Starlight is on <a href="https://www.producthunt.com/posts/starlight-by-astro" class="underline">Product Hunt</a> today!
+    </div>
     <div class="absolute top-0 w-full flex justify-center gap-x-72 max-sm:gap-x-48">
       <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
       <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
     </div>
 
-    <div class="absolute top-12 w-full flex justify-center">
+    <div class="absolute top-20 w-full flex justify-center">
       <div class="max-w-[24rem] max-sm:max-w-[18rem] w-full h-48 bg-zinc-800 border-zinc-700 border rounded-lg flex flex-col justify-center items-center">
         <div class="max-w-[21rem] max-sm:max-w-[15rem] w-full h-28 mt-6 bg-zinc-900 shadow-inner rounded flex justify-center items-center text-8xl font-black text-purple-500 glow">{votes}</div>
         <p class="text-3xl font-light p-2">VOTES</p>
       </div>
     </div>
 
-    <div class="self-end grad w-full min-h-[5rem] p-2 rounded-lg" style={`height: ${votes / maxVotes * 100}%;`}>
+    <div data-houston class="self-end grad w-full min-h-[5rem] p-2 rounded-lg -z-10 origin-bottom" style={`height: ${Math.min(votes / maxVotes, 1) * 100}%;`}>
       <div class="screen w-full h-full rounded flex justify-center items-center">
         <img class="h-8" src={`/ph/houston/${state}.svg`} alt={`Houston ${state}`}/>
       </div>
@@ -79,39 +79,59 @@ const state =
     }
   </style>
 
-  {
-    votes === maxVotes && (
-      <script is:inline>
-        var duration = 15 * 1000;
-        var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 10, spread: 360, ticks: 60, zIndex: 0 };
+  <script is:inline>
+    const { votes = 1 } = document.body.dataset;
+    const storageKey = 'ph-vote-count'
+    const previousVotes = localStorage.getItem(storageKey) || 1;
+    const votesIncreased = votes > previousVotes;
 
-        function randomInRange(min, max) {
-          return Math.random() * (max - min) + min;
+    const houston = document.querySelector('[data-houston]');
+    if (houston && votesIncreased) {
+      houston.classList.add('motion-safe:animate-rise')
+    }
+  </script>
+
+  <script>
+    import confetti from 'canvas-confetti';
+
+    const maxVotes = 1500;
+    const { votes = 1 } = document.body.dataset;
+
+    const storageKey = 'ph-vote-count'
+    const previousVotes = localStorage.getItem(storageKey) || 1;
+    localStorage.setItem(storageKey, votes);
+    const votesIncreased = votes > previousVotes;
+
+    if (votes >= maxVotes || votesIncreased) {
+      triggerConfetti()
+    }
+
+    // Reload page regularly.
+    setTimeout(() => {
+      window.location.reload()
+    }, 60 * 1000)
+
+    function triggerConfetti() {
+      // Trigger longer confetti the more votes we have.
+      var duration = votes * 10;
+      var animationEnd = Date.now() + duration;
+      var defaults = { startVelocity: 10, spread: 360, ticks: 60, zIndex: 0 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      var interval = setInterval(function() {
+        var timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
         }
 
-        var interval = setInterval(function() {
-          var timeLeft = animationEnd - Date.now();
-
-          if (timeLeft <= 0) {
-            return clearInterval(interval);
-          }
-
-          var particleCount = 50 * (timeLeft / duration);
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-        }, 250);
-      </script>
-    )
-  }
-
-  {
-    votes !== maxVotes && (
-      <script>
-        setTimeout(() => {
-          window.location.reload()
-        }, 60 * 1000)
-      </script>
-    )
-  }
+        var particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+      }, 250);
+    }
+  </script>
 </html>
