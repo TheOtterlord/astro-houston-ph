@@ -25,6 +25,7 @@ const key = "votes"
 
 const votes: number = +(await client.get(cache, key))
 const maxVotes = 1500
+const position: number = +(await client.get(cache, 'position')) + 1
 
 const state =
   votes < maxVotes / 3 ?
@@ -46,7 +47,7 @@ const state =
 	</head>
 	<body class="bg-zinc-950 text-white flex flex-wrap h-[100dvh]" data-votes={votes}>
     <div class="absolute z-10 top-0 w-full p-2 text-center bg-[#d73f37] text-white border-y border-[#fff7] text-[clamp(1rem,calc(0.75rem+1vw),1.65rem)]">
-      Starlight is on <a href="https://www.producthunt.com/posts/starlight-by-astro" class="underline">Product Hunt</a> today!
+      Starlight is {position ? `#${position}` : ''} on <a href="https://www.producthunt.com/posts/starlight-by-astro" class="underline">Product Hunt</a> today!
     </div>
     <div class="absolute top-0 w-full flex justify-center gap-x-72 max-sm:gap-x-48">
       <div class="w-6 h-48 bg-zinc-700 border-l border-l-zinc-800 border-r border-r-zinc-600"></div>
